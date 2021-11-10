@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        //Get inputs
         if (Input.GetKey(KeyCode.D))
         {
             rb2D.AddForce(new Vector2(1 * 50f, 0));
