@@ -19,28 +19,35 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-            if (Input.GetKey(KeyCode.D))
-            {
-                rb2D.AddForce(new Vector2(1 * 50f, 0));
-                Debug.Log("MOVE");
-            } else if (Input.GetKey(KeyCode.Space)){
-                Vector3 currentEndPosition = endTransform.position;
-                StartCoroutine(LerpToMouse(currentEndPosition, 1));
+        if (Input.GetKey(KeyCode.D))
+        {
+            rb2D.AddForce(new Vector2(1 * 50f, 0));
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            rb2D.AddForce(new Vector2(1 * 10f, 0));
+        }
+        else if (Input.GetKey(KeyCode.Space))
+        {
+            Vector3 currentEndPosition = endTransform.position;
+            StartCoroutine(LerpToMouse(currentEndPosition, 1));
         }
         didCollideThisFrame = false;
     }
 
-    IEnumerator LerpToMouse(Vector3 targetPosition, float lerpDuration){
+    IEnumerator LerpToMouse(Vector3 targetPosition, float lerpDuration)
+    {
         float t = 0;
         Vector3 startPosition = transform.position;
 
-        while (t < lerpDuration){
-            transform.position = Vector3.Lerp(startPosition, targetPosition, t/lerpDuration);
+        while (t < lerpDuration)
+        {
+            transform.position = Vector3.Lerp(startPosition, targetPosition, t / lerpDuration);
             t += Time.deltaTime;
 
             yield return null;
         }
-        
+
         transform.position = targetPosition;
     }
 
@@ -51,12 +58,13 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Ground"))
         {
             if (didCollideThisFrame) return;
-            if (rb2D.velocity.y > 2){
+            if (rb2D.velocity.y > 2)
+            {
                 dirtParticle.transform.position = new Vector3(transform.position.x, -3, transform.position.z);
-            dirtParticle.Play();
+                dirtParticle.Play();
 
-            myAnimator.Play("Bounce");
-        }
+                myAnimator.Play("Bounce");
+            }
             didCollideThisFrame = true;
         }
     }
