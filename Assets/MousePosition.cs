@@ -17,8 +17,9 @@ public class MousePosition : MonoBehaviour
 
         //translate this new position to in-world coordinates
         Vector3 mousePositionInWorld = Camera.main.ScreenToWorldPoint(mousePositionOnScreen);
+        mousePositionInWorld.z = 0;
 
         //move this to that space
-        transform.position = new Vector3 (mousePositionInWorld.x, mousePositionInWorld.y, 0);
+        transform.position = mousePositionInWorld;
     }
 }
