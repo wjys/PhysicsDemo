@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
 
     public Animator myAnimator;
 
+    public AnimationCurve curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
     void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
@@ -21,34 +23,64 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.D))
         {
-            rb2D.AddForce(new Vector2(1 * 50f, 0));
+            rb2D.AddForce(new Vector2(1 * 10f, 0));
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            rb2D.AddForce(new Vector2(1 * 10f, 0));
+            rb2D.AddForce(new Vector2(-1 * 10f, 0));
         }
-        else if (Input.GetKey(KeyCode.Space))
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb2D.AddForce(Vector2.up * 10f, ForceMode2D.Impulse);
+        }
+
+
+        if (Input.GetMouseButtonDown(0))
         {
             Vector3 currentEndPosition = endTransform.position;
-            StartCoroutine(LerpToMouse(currentEndPosition, 1));
+            StartCoroutine(CurveLerpToMouse(transform.position, endTransform.position, 1));
         }
         didCollideThisFrame = false;
     }
 
-    IEnumerator LerpToMouse(Vector3 targetPosition, float lerpDuration)
+    IEnumerator LerpToMouse(Vector3 startPosition, Vector3 targetPosition, float lerpDuration)
+    {
+        //time elapsed
+        float t = 0;
+
+        //while time elapsed is lower than intended duration
+        while (t < lerpDuration)
+        {
+            //interpolate per frame from start position to end position
+            transform.position = Vector3.Lerp(startPosition, targetPosition, t / lerpDuration);
+            //increase elapsed time
+            t += Time.deltaTime;
+
+            //when while loop is done, return
+            yield return null;
+        }
+    }
+
+    IEnumerator CurveLerpToMouse(Vector3 startPosition, Vector3 targetPosition, float lerpDuration)
     {
         float t = 0;
-        Vector3 startPosition = transform.position;
 
         while (t < lerpDuration)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, t / lerpDuration);
+            //curve at which interpolation will be multiplied
+            float factor = t / lerpDuration;
+            //evaluate our curve
+            // factor = curve.Evaluate(t);
+
+            //apply an ease calculation - Smoothstep
+            factor = factor * factor * (3f - 2f * factor);
+
+            transform.position = Vector3.Lerp(startPosition, targetPosition, factor);
             t += Time.deltaTime;
 
             yield return null;
         }
-
-        transform.position = targetPosition;
     }
 
     private bool didCollideThisFrame;
